@@ -1,70 +1,58 @@
-# Flipit
+# Flipit — First Three Screens
 
-A three-screen interactive UX class prototype for a more transparent local marketplace.
+## Step 1 — Need, Persona, Capability, and Value
 
-**[Open the demo](https://jorge11byu.github.io/flipit-ux/)**
+**Need:** Facebook market place sellers have trouble choosing who to message back when they get multiple messages/offers at the same time. Sometimes people ghost the seller and the seller loses a chance to sell to the other person.
 
-## The need
+**Persona:** Facebook marketplace users that sell items and are frustrated by Facebook’s lack of communication features when it comes to multiple messages.
 
-Sellers receiving several messages and offers need a clearer way to choose a buyer, reserve an item, and return to interested buyers if a sale falls through. Flipit explores that workflow without building a production marketplace.
+**Capability:** Communicate to buyers when they have other messages or offers.
 
-## Three screens
+**Value:** Transparency. Buyers can transparently see when a seller has messages/offers from others for an item. This allows clearer communication between sellers and buyers so that there is less chance of a seller getting ghosted or an interested buyer getting passed by.
 
-See [CHANGELOG.md](CHANGELOG.md) for the design revision history and the original creation commit.
+## Step 2 — Three Screens
 
-1. **Item listing** — view a chair, compare anonymous official offers, message the seller, or submit an offer.
-2. **Seller inbox** — select a listing, filter messages and offers, compare pickup details, reply, and accept one offer.
-3. **Pending sales** — confirm pickup, mark an item sold, or reopen a failed sale and notify the remaining buyers in the demo.
+### Screen 1:
 
-Each screen leads with an action-focused affordance sentence. The responsive desktop interface becomes a sequential inbox on phones.
+A listed item page. It shows pictures of the item, a description, details about the item, etc just like Facebook Marketplace. However it also shows how many messages the seller has received in regard to this item in the past couple days and if they have any offers. The main job of this page is to communicate clearly with the buyer. I chose this page because it shows the value I talked about in step 1 (seeing interest from others) from the buyer’s perspective.
 
-## Try a complete journey
+### Screen 2:
 
-1. On Item listing, send a message. It increases message activity without creating an offer.
-2. Submit an official offer with a price and pickup time.
-3. Open Seller inbox, select **You (demo buyer)**, and accept the offer.
-4. The chair is reserved immediately and appears in Pending sales.
-5. Confirm the pickup, then mark it sold. Alternatively, use **Sale fell through** to reopen the item and add availability notices to other conversations.
+The seller's inbox. It has their messages arranged by item. It also shows if the buyer sent a regular message or an official offer. Could also show a buyer reliability score (the score goes down if the buyer ghosts after the seller accepts the offer). The main job of this page is for the seller to clearly see who is interested and who they could potentially sell to. I chose to show this screen because it solves the need I mentioned in step 1 (deciding who to sell to).
 
-The accent table starts with a pending sale, so the third screen is useful without completing the first two. **Reset demo** restores all sample data. Changes survive refresh in the same browser tab through `sessionStorage`; storage failure falls back to in-memory operation.
+### Screen 3:
 
-## Run locally
+Pending Sales page. It shows what items you have agreed to sell, a timeline for when the sale should happen, and a button that alerts other interested people if the sale happens to fall through. The main job of this page is to make sales happen smoothly. Like screen 2, it helps sellers solve their need of still selling an item when the first buyer falls through.
 
-No install or build step is required. From this directory, run:
+## Step 3 — Before and After
 
-```sh
-python3 -m http.server 4173 --bind 127.0.0.1
-```
+### Before
 
-Open `http://127.0.0.1:4173/`. Hash routes (`#/listing`, `#/inbox`, and `#/sales`) work on static hosts and survive refresh.
+![Before: initial Flipit item listing][image1]
 
-## What is simulated
+### After
 
-- All people, activity counts, offer amounts, profile claims, reliability scores, locations, and conversations are fictional sample data. Photographs illustrate the listings; no pictured item is actually for sale.
-- This is a shared-state demo: navigation lets a reviewer explore the buyer and seller perspectives. It is not authentication or a multi-user service.
-- Messages, notifications, and transactions never reach another person. There are no accounts, payments, databases, analytics, Facebook integrations, or backend APIs.
-- Message counts include buyer and seller messages, not unique buyers. System status notices are excluded. The 48-hour window and relative pickup times are fixed demonstration data, not live timers.
-- Offer prices and pickup windows are publicly visible within the demo. Names, private notes, and conversation contents appear only on the seller screens.
-- Reliability scores are illustrative. This demo does not detect ghosting, calculate penalties, or evaluate real people.
-- The gallery uses a full photograph and two clearly labeled crops of that same photograph.
-- Seller-confirmed availability is sample activity. The initial “2 hours ago” confirmation is seeded; subsequent availability timestamps reflect local reservation, reopening, and sale-completion actions.
+![After: revised Flipit item listing][image2]
 
-## Assets
+## Steps 4 & 5 — Live Prototype and Design Revision
 
-Photos are used under the [Pexels license](https://www.pexels.com/license/). Local copies keep item images available without relying on a third-party image server.
+[https://jorge11byu.github.io/flipit-ux/\#/listing](https://jorge11byu.github.io/flipit-ux/#/listing)
 
-| Asset              | Photographer    | Original                                                                                               |
-| ------------------ | --------------- | ------------------------------------------------------------------------------------------------------ |
-| `assets/chair.jpg` | Ksenia Chernaya | [Brown leather chair](https://www.pexels.com/photo/a-brown-leather-chair-on-a-white-surface-11112729/) |
-| `assets/table.jpg` | Lisa Fotios     | [Round wooden end table](https://www.pexels.com/photo/round-brown-wooden-end-table-1444424/)           |
-| `assets/lamp.jpg`  | Artem Podrez    | [White table lamp](https://www.pexels.com/photo/a-white-lamp-on-the-table-4612402/)                    |
+On the Item listing page I made the two columns have a card around them so it was easier to tell that they are together.
 
-Typography: Manrope and DM Sans via Google Fonts, with sans-serif fallbacks. The icon outlines and Flipit arrow favicon are defined in the source. No AI-generated imagery is used.
+## Step 6 — Design Question Plan
 
-## Deployment
+**Need** \- Tell me about how you handle receiving multiple offers at the same time. Is there anything frustrating about that? (I think they will say that they replied to the first person who messaged them and had to tell the other people that they were in talks with someone else or just didn’t respond to the other person at first. This is why my prototype shows current offers and messages. It gives the buyers context.
 
-GitHub Pages serves the repository root from the `main` branch. `.nojekyll` enables plain static-file publishing. No credentials, environment files, or private data are required.
+**Value** \- If clear communication with multiple buyers was not a problem anymore, how would that improve your selling experience? (I think they would say that it would ease the stress of trying to keep all of the buyers available without over promising. The premise of this app relies on this being true. The seller inbox page is meant to help sellers keep track of multiple buyer offers/messages, while the item listing page is meant to give buyers context.
 
-## Verification
+**Persona** \- How often do you get messaged by multiple sellers. When it happens, what do you currently do to deal with it? (The answer would probably vary based on the number of listings the person has, but i think no matter what the person wouldn’t have a very good way at currently dealing with it. The value of this app relies on making this process better for sellers and buyers alike.
 
-The prototype is checked in a browser for the offer, reservation, completion, and fallback journeys; message/offer separation; prevention of double acceptance; keyboard dialog behavior; session refresh and reset; and desktop/mobile layouts. See [QA.md](QA.md) for the recorded checks.
+**Capability** \- Click around on this and tell me what the purpose of this app is. How is it different from similar apps you have used? (I think they will be able to guess it is a marketplace. I am hoping they will see that it is different due to being able to see other people’s offers. The “messages and active offers” section of the item listing page relies on this being a useful feature.
+
+## Step 7 — Design Justification and First Read
+
+The landing screen shows that it is a selling platform, but it doesn’t really convey the separating features without a little bit of reading. It has a bunch of random headers or eyebrow text that could be removed so there is less text. You can tell the messages and offers go together because they are in the same card. Same with the history of offers because they are grouped. Screens 2 and 3 stay on mission and you can get back to the landing page. However they could be a bit simpler. I didn’t like how the AI originally had the item listing in 2 sections. This made them feel unconnected. I had AI put a card over both to group them together. I also had it remove some of the extra wording. This introduced more blank space and made the app less exhausting to look at.
+
+[image1]: docs/images/listing-before.png
+[image2]: docs/images/listing-after.png
