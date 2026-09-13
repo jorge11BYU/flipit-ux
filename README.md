@@ -10,8 +10,6 @@ Sellers receiving several messages and offers need a clearer way to choose a buy
 
 ## Three screens
 
-See [CHANGELOG.md](CHANGELOG.md) for the design revision history and the original creation commit.
-
 1. **Item listing** — view a chair, compare anonymous official offers, message the seller, or submit an offer.
 2. **Seller inbox** — select a listing, filter messages and offers, compare pickup details, reply, and accept one offer.
 3. **Pending sales** — confirm pickup, mark an item sold, or reopen a failed sale and notify the remaining buyers in the demo.
@@ -47,7 +45,6 @@ Open `http://127.0.0.1:4173/`. Hash routes (`#/listing`, `#/inbox`, and `#/sales
 - Offer prices and pickup windows are publicly visible within the demo. Names, private notes, and conversation contents appear only on the seller screens.
 - Reliability scores are illustrative. This demo does not detect ghosting, calculate penalties, or evaluate real people.
 - The gallery uses a full photograph and two clearly labeled crops of that same photograph.
-- Seller-confirmed availability is sample activity. The initial “2 hours ago” confirmation is seeded; subsequent availability timestamps reflect local reservation, reopening, and sale-completion actions.
 
 ## Assets
 

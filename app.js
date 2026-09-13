@@ -56,7 +56,7 @@ const initialState = () => ({
       condition: "Excellent condition",
       location: "Provo, UT · 2 miles away",
       description:
-        "Brown leather, rolled arms, and brass-tone details. Gently used in a smoke-free home.",
+        "A good book’s favorite seat. Rich brown leather, classic rolled arms, and brass-tone details. Gently used in a smoke-free home. Making room for a new space, so it’s ready for its next reading corner.",
       unread: 3,
     },
     {
@@ -235,10 +235,6 @@ try {
 } catch {
   state = initialState();
 }
-const existingChair = state.items.find((item) => item.id === "chair");
-if (existingChair?.description?.startsWith("A good book’s favorite seat.")) {
-  existingChair.description = "Brown leather, rolled arms, and brass-tone details. Gently used in a smoke-free home.";
-}
 let selectedItem = "chair",
   selectedThread = "t1",
   selectedSale = "sale-table",
@@ -263,8 +259,8 @@ const statusTag = (item) =>
   `<span class="tag ${item.status === "reserved" ? "pending" : item.status === "sold" ? "sold" : "available"}">${item.status === "reserved" ? "Pending pickup" : item.status === "sold" ? "Sold" : "Available"}</span>`;
 const avatar = (t) =>
   `<span class="avatar ${t.color || ""}" aria-hidden="true">${t.initials}</span>`;
-const heading = (start, end, view) =>
-  `<div class="page-heading"><div><h1>${start.replace("moving—", '<span class="no-break">moving—</span>')}<br><span>${end}</span></h1></div><span class="view-label">${icon(view === "Buyer view" ? "eye" : "box")}${view}</span></div>`;
+const heading = (number, label, start, end, view) =>
+  `<div class="page-heading"><div><p class="eyebrow">${number} / ${label}</p><h1>${start.replace("moving—", '<span class="no-break">moving—</span>')}<br><span>${end}</span></h1></div><span class="view-label">${icon(view === "Buyer view" ? "eye" : "box")}${view}</span></div>`;
 function toast(message) {
   const el = document.querySelector("#toast");
   el.textContent = message;
@@ -290,57 +286,22 @@ function render() {
     page === "listing" ? listing() : page === "inbox" ? inbox() : sales();
   document.title = `Flipit — ${{ listing: "Item listing", inbox: "Seller inbox", sales: "Pending sales" }[page]}`;
 }
-function listingFreshness(item) {
-  const updated = item.availabilityUpdatedAt;
-  const minutes = updated
-    ? Math.max(0, Math.floor((Date.now() - updated) / 60000))
-    : null;
-  const age =
-    minutes === null
-      ? null
-      : minutes < 1
-        ? "Just now"
-        : minutes < 60
-          ? `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`
-          : minutes < 1440
-            ? `${Math.floor(minutes / 60)} ${minutes < 120 ? "hour" : "hours"} ago`
-            : new Date(updated).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              });
-  const title =
-    item.status === "sold"
-      ? "Seller marked this item sold"
-      : item.status === "reserved"
-        ? "Seller reserved this item"
-        : item.availabilityAction === "reopened"
-          ? "Seller reconfirmed availability"
-          : "Seller confirmed availability";
-  const explanation =
-    item.status === "sold"
-      ? "This item is no longer available."
-      : item.status === "reserved"
-        ? "A pickup is pending. Other offers are backups."
-        : "No offer accepted yet.";
-  return `<div class="listing-freshness ${item.status}" aria-label="Listing freshness">${icon(item.status === "available" ? "check" : item.status === "reserved" ? "clock" : "tag")}<div><strong>${title}</strong><span>${age || (item.status === "available" ? "2 hours ago" : "Current listing status")} · Sample activity</span><p>${explanation}</p></div></div>`;
-}
 function listing() {
   const item = itemById("chair"),
     offers = activeOffers("chair"),
     ownAccepted = state.threads.some(
       (t) => t.id === "demo-buyer" && t.offer?.status === "accepted",
     );
-  return `${heading("No more guessing if", "an item is still available.", "Buyer view")}
-  <article class="listing-grid card" aria-label="The Sunday lounge chair listing"><section class="listing-visual" aria-label="Item photographs and description">
+  return `${heading("01", "Item listing", "See the interest before", "you make an offer.", "Buyer view")}
+  <div class="listing-grid"><section class="listing-visual" aria-label="Item photographs and description">
     <div class="photo-main"><img src="${item.image}" alt="Brown leather lounge chair with rolled arms and brass-tone trim" style="object-position:${["50% 50%", "25% 50%", "75% 50%"][galleryIndex]};${galleryIndex ? "transform:scale(1.35)" : ""}"><span class="photo-caption">${icon("image")}${["Full view", "Arm detail · cropped view", "Seat detail · cropped view"][galleryIndex]}</span><span class="photo-counter">${galleryIndex + 1} / 3</span></div>
-    <div class="thumbs" aria-label="Photo views">${[0, 1, 2].map((n) => `<button class="thumb" data-action="photo" data-index="${n}" aria-label="${["Full photo", "Arm crop", "Seat crop"][n]}" aria-pressed="${n === galleryIndex}"><img src="${item.image}" alt="" style="${n ? "transform:scale(1.3)" : ""}"></button>`).join("")}</div>
-    <div class="description"><h3>Details</h3><p>${item.description}</p></div>
+    <div class="thumbs" aria-label="Photo views">${[0, 1, 2].map((n) => `<button class="thumb" data-action="photo" data-index="${n}" aria-label="${["Full photo", "Arm crop", "Seat crop"][n]}" aria-pressed="${n === galleryIndex}"><img src="${item.image}" alt="" style="${n ? "transform:scale(1.3)" : ""}"></button>`).join("")}<span class="gallery-note">One photograph.<br>Three closer looks.</span></div>
+    <div class="description"><h3>A little about the chair</h3><p>${item.description}</p></div>
     <div class="seller-card"><span class="avatar rose" aria-hidden="true">JD</span><div><strong>Listed by Jamie Davis</strong><p>Member since 2022 · 18 completed sales</p></div><span class="verified">${icon("shield")}Verified profile</span></div>
-  </section><section class="listing-detail" aria-label="Listing and offers"><div class="listing-meta"><span class="small muted">${item.category}</span>${statusTag(item)}</div>
+  </section><section class="listing-detail card" aria-label="Listing and offers"><div class="listing-meta"><span class="small muted">${item.category}</span>${statusTag(item)}</div>
     <div class="item-title-row"><h2>${item.title}</h2><strong class="price">${money(item.price)}</strong></div><p class="location">${icon("pin")}${item.location}</p>
     <div class="item-facts"><span>${item.condition}</span><span>Local pickup</span></div>
-    ${listingFreshness(item)}
-    <div class="interest-box"><h3>${icon("trend")}Buyer interest</h3><div class="interest-stats"><div><strong>${item.messages}</strong><span>messages in the past 48 hours</span></div><div><strong>${offers.length}</strong><span>${item.status === "reserved" ? "backup" : "active"} offers</span></div></div><p class="interest-note">Includes follow-up messages, not just unique buyers.</p></div>
+    <div class="interest-box"><h3>${icon("trend")}A clear view of the interest</h3><div class="interest-stats"><div><strong>${item.messages}</strong><span>messages in the past 48 hours</span></div><div><strong>${offers.length}</strong><span>${item.status === "reserved" ? "backup" : "active"} offers</span></div></div><p class="interest-note">Message counts include follow-ups, not just unique buyers.</p></div>
     <div class="offers-heading"><h3>${item.status === "reserved" ? "Backup offers" : "Current offers"}</h3><span>Highest price first</span></div>
     <div class="public-offers">${
       [...offers]
@@ -353,9 +314,9 @@ function listing() {
     }</div>
     <p class="private-note">${icon("lock")}Only amounts and pickup windows are public. Names and conversations stay private.</p>
     ${item.status === "reserved" ? `<p class="notice">${ownAccepted ? "Your offer was accepted! The chair is reserved for you. Coordinate pickup with the seller." : "Reserved for another buyer. You can send a backup offer in case plans change."}</p>` : ""}
-    <div class="listing-actions"><button class="btn" data-action="message" ${item.status === "sold" ? "disabled" : ""}>${icon("message")}Message seller</button><button class="btn primary" data-action="offer" ${item.status === "sold" || ownAccepted ? "disabled" : ""}>${ownAccepted ? "Your offer is accepted" : item.status === "reserved" ? "Send backup offer" : "Make an offer"}${icon("arrow")}</button></div><p class="action-note">${item.status === "sold" ? "This item is sold." : "Reserved only after the seller accepts an offer."}</p>
-    <div class="mobile-listing-details description"><h3>Details</h3><p>${item.description}</p><p class="mobile-seller">Listed by Jamie Davis · 18 completed sales</p></div>
-  </section></article>`;
+    <div class="listing-actions"><button class="btn" data-action="message" ${item.status === "sold" ? "disabled" : ""}>${icon("message")}Message seller</button><button class="btn primary" data-action="offer" ${item.status === "sold" || ownAccepted ? "disabled" : ""}>${ownAccepted ? "Your offer is accepted" : item.status === "reserved" ? "Send backup offer" : "Make an offer"}${icon("arrow")}</button></div><p class="action-note">${item.status === "sold" ? "This item has found its next home." : "An offer starts a conversation. It doesn’t reserve the item."}</p>
+    <div class="mobile-listing-details description"><h3>A little about the chair</h3><p>${item.description}</p><p class="mobile-seller">Listed by Jamie Davis · 18 completed sales</p></div>
+  </section></div>`;
 }
 function inbox() {
   const item = itemById(selectedItem),
@@ -366,7 +327,7 @@ function inbox() {
   if (!threads.some((t) => t.id === selectedThread))
     selectedThread = threads[0]?.id;
   const t = threadById(selectedThread);
-  return `${heading("Compare buyers and", "choose your next sale.", "Seller view")}
+  return `${heading("02", "Seller inbox", "Compare buyers and", "choose your next sale.", "Seller view")}
   <div class="inbox-shell card" data-panel="${mobilePanel}">
     <aside class="item-column" aria-label="Your listed items"><div class="column-heading"><h2>Your listings</h2><span class="count-pill">${state.items.length}</span></div>
       <div class="item-list">${state.items
@@ -377,19 +338,19 @@ function inbox() {
           return `<button class="item-row ${i.id === selectedItem ? "selected" : ""}" data-action="select-item" data-item="${i.id}" aria-pressed="${i.id === selectedItem}"><img src="${i.image}" alt=""><span><strong>${i.title}</strong><small>${money(i.price)}${i.status === "reserved" ? " · Pending" : i.status === "sold" ? " · Sold" : ""}</small></span>${unread ? `<span class="unread-count">${unread}<span class="sr-only"> unread conversations</span></span>` : ""}</button>`;
         })
         .join("")}</div>
-
+      <div class="inbox-tip">${icon("lock")}<p>One item, one place.<br>Your conversations stay together.</p></div>
     </aside>
     <section class="buyers-column" aria-label="Interested buyers"><div class="column-heading"><button class="icon-button mobile-back" data-action="panel" data-panel="items" aria-label="Back to items">${icon("back")}</button><div><h2>Interested buyers</h2><p>${all.length} conversations · ${activeOffers(selectedItem).length} ${item.status === "reserved" ? "backup" : "active"} offers</p></div></div>
       <div class="filter-tabs" role="group" aria-label="Filter conversations">${["all", "offers", "messages"].map((f) => `<button data-action="filter" data-filter="${f}" aria-pressed="${filter === f}">${f[0].toUpperCase() + f.slice(1)}</button>`).join("")}</div>
       <div class="buyer-list">${threads.map((b) => `<button class="buyer-row ${b.id === selectedThread ? "selected" : ""}" data-action="select-thread" data-thread="${b.id}" aria-pressed="${b.id === selectedThread}"><span class="buyer-top">${avatar(b)}<span class="buyer-name"><strong>${escapeHTML(b.buyer)}</strong><span class="tag ${b.offer ? "offer" : "message"}">${b.offer ? "Official offer" : "Message"}</span></span>${b.unread ? '<span class="unread-dot" aria-label="Unread"></span>' : ""}</span>${b.offer ? `<span class="buyer-offer"><strong>${money(b.offer.amount)}</strong><span>${escapeHTML(b.offer.pickup)}</span></span>` : ""}<span class="buyer-preview">${escapeHTML(b.messages.at(-1)?.text || "Sent an official offer.")}</span>${b.offer && b.offer.status !== "active" ? `<span class="offer-state">${{ accepted: "Reserved for this buyer", declined: "Previous offer · Sale fell through", closed: "Offer closed", completed: "Sale completed" }[b.offer.status] || ""}</span>` : ""}</button>`).join("") || '<div class="empty-state small">No conversations in this filter.</div>'}</div>
     </section>
     <section class="conversation-column" aria-label="Selected conversation">${t ? conversation(t, item) : '<div class="empty-state"><h3>No conversation selected</h3><p>Choose another filter to see your buyers.</p></div>'}</section>
-  </div>`;
+  </div><p class="under-panel">${icon("info")}You choose the best fit. A higher offer doesn’t always mean an easier pickup.</p>`;
 }
 function conversation(t, item) {
   const offer = t.offer;
   return `<div class="conversation-header"><button class="icon-button mobile-back" data-action="panel" data-panel="buyers" aria-label="Back to buyers">${icon("back")}</button>${avatar(t)}<div class="conversation-person"><h2>${escapeHTML(t.buyer)}</h2><p>About ${item.title.toLowerCase()}</p></div><button class="reliability" data-action="score" data-thread="${t.id}" aria-label="Reliability score ${t.score} out of 100, sample. View explanation">${icon("shield")}<strong>${t.score}</strong><span>/100 · sample</span>${icon("info")}</button></div>
-  ${offer ? `<div class="offer-summary"><div class="offer-summary-label"><span class="tag offer">${icon("tag")}Official offer</span><span class="small muted">${offer.status === "active" ? "Awaiting your decision" : offer.status === "accepted" ? "Accepted" : offer.status === "declined" ? "Sale fell through" : offer.status === "completed" ? "Completed" : "Closed"}</span></div><div class="offer-summary-value"><strong>${money(offer.amount)}</strong><span>${icon("calendar")}${escapeHTML(offer.pickup)}</span></div>${item.status === "available" && offer.status === "active" ? `<button class="btn primary full" data-action="accept" data-thread="${t.id}">Accept offer${icon("arrow")}</button>` : item.status === "reserved" ? `<p class="small muted">${offer.status === "accepted" ? "This item is reserved for this buyer." : "This offer is a backup while another pickup is pending."}</p><button class="btn full" data-action="view-sale" data-item="${item.id}">View pending sale${icon("arrow")}</button>` : ""}</div>` : '<div class="message-context">' + icon("message") + "No official offer yet.</div>"}
+  ${offer ? `<div class="offer-summary"><div class="offer-summary-label"><span class="tag offer">${icon("tag")}Official offer</span><span class="small muted">${offer.status === "active" ? "Awaiting your decision" : offer.status === "accepted" ? "Accepted" : offer.status === "declined" ? "Sale fell through" : offer.status === "completed" ? "Completed" : "Closed"}</span></div><div class="offer-summary-value"><strong>${money(offer.amount)}</strong><span>${icon("calendar")}${escapeHTML(offer.pickup)}</span></div>${item.status === "available" && offer.status === "active" ? `<button class="btn primary full" data-action="accept" data-thread="${t.id}">Accept offer${icon("arrow")}</button>` : item.status === "reserved" ? `<p class="small muted">${offer.status === "accepted" ? "This item is reserved for this buyer." : "This offer is a backup while another pickup is pending."}</p><button class="btn full" data-action="view-sale" data-item="${item.id}">View pending sale${icon("arrow")}</button>` : ""}</div>` : '<div class="message-context">' + icon("message") + "Just a conversation. No official offer yet.</div>"}
   <div class="chat-messages" aria-label="Message history"><div class="chat-date"><span>Today · Sample conversation</span></div>${t.messages.map((m) => (m.from === "system" ? `<div class="system-message">${icon("info")}<span>${escapeHTML(m.text)}</span></div>` : `<div class="message-group ${m.from === "seller" ? "outgoing" : "incoming"}"><div class="bubble">${escapeHTML(m.text)}</div><span class="message-time">${m.from === "seller" ? "You · " : ""}${m.time}</span></div>`)).join("") || '<p class="small muted">No messages yet. Start the conversation below.</p>'}</div>
   <form id="reply-form" class="reply-form" data-thread="${t.id}"><label class="sr-only" for="reply-text">Reply to ${escapeHTML(t.buyer)}</label><input id="reply-text" name="reply" placeholder="Write a reply…" required maxlength="1000" autocomplete="off"><button class="btn primary" aria-label="Send reply" type="submit">${icon("send")}</button></form><p class="chat-privacy">${icon("lock")}Only you and this buyer can see these messages.</p>`;
 }
@@ -398,7 +359,7 @@ function sales() {
   if (!list.some((s) => s.id === selectedSale)) selectedSale = list[0]?.id;
   const sale = list.find((s) => s.id === selectedSale),
     pending = list.filter((s) => s.stage !== "completed").length;
-  return `${heading("Keep your sale moving—", "even if plans change.", "Seller view")}
+  return `${heading("03", "Pending sales", "Keep your sale moving—", "even if plans change.", "Seller view")}
   <div class="sales-grid"><aside class="sale-list-column" aria-label="Your pending sales"><div class="sales-list-title"><h2>Your pickups</h2><span class="count-pill">${pending} pending</span></div>
   ${
     list
@@ -408,10 +369,10 @@ function sales() {
         return `<button class="sale-card card ${s.id === selectedSale ? "selected" : ""}" data-action="select-sale" data-sale="${s.id}" aria-pressed="${s.id === selectedSale}"><span class="sale-card-top"><img src="${i.image}" alt=""><span><strong>${i.title}</strong><span class="sale-card-price">${money(t.offer.amount)} <small>agreed price</small></span></span></span><span class="sale-card-divider"></span><span class="sale-card-bottom"><span>${icon("calendar")}${escapeHTML(t.offer.pickup)}</span><span class="tag ${s.stage === "completed" ? "available" : s.stage === "confirmed" ? "offer" : "pending"}">${s.stage === "completed" ? "Completed" : s.stage === "confirmed" ? "Confirmed" : "To confirm"}</span></span></button>`;
       })
       .join("") ||
-    '<div class="card empty-state"><h3>No pending pickups</h3><p>Accept an offer to arrange pickup.</p><a class="btn primary" href="#/inbox">Go to seller inbox</a></div>'
+    '<div class="card empty-state"><h3>No pending pickups</h3><p>Accept an offer to get your next sale moving.</p><a class="btn primary" href="#/inbox">Go to seller inbox</a></div>'
   }
-  </aside>
-  <section class="sale-detail card" aria-label="Selected sale">${sale ? saleDetails(sale) : '<div class="empty-state"><h3>No sale selected</h3><p>Accept an offer in your inbox to arrange pickup.</p></div>'}</section></div>`;
+  <div class="sale-tip">${icon("shield")}<div><strong>A plan everyone can see.</strong><p>Once you accept an offer, the item is reserved. Other interested buyers can stay as backups.</p></div></div></aside>
+  <section class="sale-detail card" aria-label="Selected sale">${sale ? saleDetails(sale) : '<div class="empty-state"><h3>Your next sale starts with an offer.</h3><p>Choose a buyer in your inbox. Their pickup plan will appear here.</p></div>'}</section></div>`;
 }
 function saleDetails(s) {
   const i = itemById(s.item),
@@ -423,7 +384,7 @@ function saleDetails(s) {
         (!b.offer || b.offer.status === "active"),
     ),
     isComplete = s.stage === "completed";
-  return `<div class="sale-detail-header"><div><p class="eyebrow">${isComplete ? "Completed" : "Reserved · Local pickup"}</p><h2>${i.title}</h2></div>${statusTag(i)}</div>
+  return `<div class="sale-detail-header"><div><p class="eyebrow">${isComplete ? "A successful handoff" : "Reserved · Local pickup"}</p><h2>${i.title}</h2></div>${statusTag(i)}</div>
   <div class="pickup-panel"><div class="pickup-icon">${icon(isComplete ? "check" : "calendar")}</div><div><p>${isComplete ? "Pickup completed" : s.stage === "confirmed" ? "Your pickup is confirmed" : "Next up: confirm your pickup"}</p><h3>${escapeHTML(t.offer.pickup)}</h3><span>${icon("pin")}Provo, UT · Agree on a public meetup spot in chat</span></div></div>
   <div class="sale-buyer">${avatar(t)}<div><strong>${escapeHTML(t.buyer)}</strong><span>Buyer · ${money(t.offer.amount)} agreed</span></div><button class="btn" data-action="open-chat" data-thread="${t.id}">${icon("message")}Message</button></div>
   <div class="timeline" aria-label="Sale progress">${[
@@ -435,11 +396,11 @@ function saleDetails(s) {
       const stageIndex =
           s.stage === "accepted" ? 0 : s.stage === "confirmed" ? 1 : 2,
         done = n <= stageIndex;
-      return `<div class="timeline-step ${done ? "done" : ""} ${n === stageIndex + 1 ? "next" : ""}"><span class="timeline-marker">${done ? icon("check") : n + 1}</span><div><strong>${label}</strong><p>${n === 0 ? "Item reserved for one buyer." : n === 1 ? (done ? "Pickup time agreed with your buyer." : "Confirm the time after chatting with your buyer.") : done ? "Item picked up." : "Mark sold after the item has been picked up."}</p></div>${n === stageIndex + 1 ? '<span class="next-label">Next step</span>' : ""}</div>`;
+      return `<div class="timeline-step ${done ? "done" : ""} ${n === stageIndex + 1 ? "next" : ""}"><span class="timeline-marker">${done ? icon("check") : n + 1}</span><div><strong>${label}</strong><p>${n === 0 ? "Item reserved for one buyer." : n === 1 ? (done ? "Pickup time agreed with your buyer." : "Confirm the time after chatting with your buyer.") : done ? "Another item, a new home." : "Mark sold after the item has been picked up."}</p></div>${n === stageIndex + 1 ? '<span class="next-label">Next step</span>' : ""}</div>`;
     })
     .join("")}</div>
   ${!isComplete ? `<div class="sale-primary-actions"><button class="btn primary" data-action="${s.stage === "accepted" ? "confirm-pickup" : "complete-sale"}" data-sale="${s.id}">${icon(s.stage === "accepted" ? "calendar" : "check")}${s.stage === "accepted" ? "Confirm pickup" : "Mark sold"}</button><button class="btn subtle" data-action="fallthrough" data-sale="${s.id}">Sale fell through</button></div>` : '<div class="completion-banner">' + icon("check") + "Sale completed. Other offers are now closed.</div>"}
-  <div class="backup-section"><div class="backup-title"><h3>${icon("users")}${isComplete ? "Other conversations" : `${backups.length} interested ${backups.length === 1 ? "buyer" : "buyers"} waiting`}</h3></div><p>${isComplete ? "Listing marked sold." : "Reopen the listing to notify these buyers if the sale falls through."}</p>${!isComplete ? backups.map((b) => `<button class="backup-row" data-action="open-chat" data-thread="${b.id}">${avatar(b)}<span><strong>${escapeHTML(b.buyer)}</strong><small>${b.offer ? `${money(b.offer.amount)} · ${escapeHTML(b.offer.pickup)}` : "Asked about this item"}</small></span>${icon("chevron")}</button>`).join("") : ""}</div>`;
+  <div class="backup-section"><div class="backup-title"><h3>${icon("users")}${isComplete ? "Other conversations" : `${backups.length} interested ${backups.length === 1 ? "buyer" : "buyers"} waiting`}</h3>${!isComplete ? '<span class="tag message">Your backup plan</span>' : ""}</div><p>${isComplete ? "The listing is marked sold, so everyone can see it’s no longer available." : "If plans change, reopen the listing and let these buyers know in one step."}</p>${!isComplete ? backups.map((b) => `<button class="backup-row" data-action="open-chat" data-thread="${b.id}">${avatar(b)}<span><strong>${escapeHTML(b.buyer)}</strong><small>${b.offer ? `${money(b.offer.amount)} · ${escapeHTML(b.offer.pickup)}` : "Asked about this item"}</small></span>${icon("chevron")}</button>`).join("") : ""}</div>`;
 }
 function openModal(title, body) {
   modal.innerHTML = `<div class="dialog-header"><h2 id="modal-title">${title}</h2><button class="icon-button" data-action="close" aria-label="Close dialog">${icon("close")}</button></div>${body}`;
@@ -490,7 +451,7 @@ document.addEventListener("click", (e) => {
     openModal(
       itemById("chair").status === "reserved"
         ? "Send a backup offer"
-        : "Make an offer",
+        : "Make it an official offer",
       `<p class="dialog-intro">Share your price and when you can pick up. Only those details will be visible to other buyers.</p><form id="offer-form"><div class="field"><label for="offer-amount">Your offer (USD)</label><input id="offer-amount" name="amount" type="number" min="1" max="100000" step="1" value="${old?.amount || 180}" required></div><div class="field"><label for="offer-pickup">Pickup window</label><select id="offer-pickup" name="pickup" required><option value="">Choose a time</option><option>Today, 5–6 PM</option><option>Tomorrow, 12–1 PM</option><option>Tomorrow, 4–5 PM</option><option>Saturday, 10–11 AM</option></select></div><div class="field"><label for="offer-note">Private note <span class="muted">(optional)</span></label><textarea id="offer-note" name="note" maxlength="1000" placeholder="Anything you’d like the seller to know"></textarea></div><p class="small muted">${old ? "Submitting replaces your previous offer." : "The seller chooses which offer to accept."}</p>${formButtons(old ? "Update offer" : "Send offer")}</form>`,
     );
   }
@@ -605,8 +566,6 @@ document.addEventListener("click", (e) => {
       return;
     }
     i.status = "reserved";
-    i.availabilityUpdatedAt = Date.now();
-    i.availabilityAction = "reserved";
     t.offer.status = "accepted";
     t.messages.push({
       from: "system",
@@ -624,7 +583,7 @@ document.addEventListener("click", (e) => {
     save();
     modal.close();
     location.hash = "/sales";
-    toast("Offer accepted. Item reserved.");
+    toast("Offer accepted. The item is reserved for one buyer.");
   }
   if (a === "select-sale") {
     selectedSale = el.dataset.sale;
@@ -659,7 +618,7 @@ document.addEventListener("click", (e) => {
     save();
     modal.close();
     render();
-    toast("Pickup confirmed.");
+    toast("Pickup confirmed. You’re one step closer to sold.");
   }
   if (a === "complete-sale") {
     const s = state.sales.find((s) => s.id === el.dataset.sale);
@@ -674,8 +633,6 @@ document.addEventListener("click", (e) => {
     if (s?.stage !== "confirmed") return;
     s.stage = "completed";
     itemById(s.item).status = "sold";
-    itemById(s.item).availabilityUpdatedAt = Date.now();
-    itemById(s.item).availabilityAction = "sold";
     state.threads
       .filter((t) => t.item === s.item)
       .forEach((t) => {
@@ -693,7 +650,7 @@ document.addEventListener("click", (e) => {
     save();
     modal.close();
     render();
-    toast("Marked sold. Other offers closed.");
+    toast("Sold! The listing and all offers have been updated.");
   }
   if (a === "fallthrough") {
     const s = state.sales.find((s) => s.id === el.dataset.sale);
@@ -705,7 +662,7 @@ document.addEventListener("click", (e) => {
         (!t.offer || t.offer.status === "active"),
     ).length;
     openModal(
-      "Reopen listing",
+      "Get your sale moving again",
       `<p class="dialog-intro">Release this reservation and let ${count} other interested ${count === 1 ? "buyer" : "buyers"} know the item is available. Their messages and active offers stay in your inbox.</p><form id="fallthrough-form" data-sale="${s.id}"><div class="field"><label for="fallthrough-reason">What changed? <span class="muted">(optional)</span></label><select id="fallthrough-reason" name="reason"><option value="">Choose a reason</option><option>Buyer stopped responding</option><option>Pickup plans changed</option><option>Buyer no longer wants the item</option><option>Something else</option></select></div><p class="small muted">This note stays private. No reliability scores will change in the demo.</p><div class="dialog-actions vertical"><button class="btn primary full" type="submit">Reopen listing and notify interested buyers</button><button class="btn subtle full" type="button" data-action="close">Keep the reservation</button></div></form>`,
     );
   }
@@ -743,8 +700,6 @@ document.addEventListener("submit", (e) => {
     s.stage = "cancelled";
     s.reason = String(new FormData(e.target).get("reason"));
     itemById(s.item).status = "available";
-    itemById(s.item).availabilityUpdatedAt = Date.now();
-    itemById(s.item).availabilityAction = "reopened";
     previous.offer.status = "declined";
     previous.messages.push({
       from: "system",
@@ -811,7 +766,7 @@ document.addEventListener("click", (e) => {
     save();
     modal.close();
     render();
-    toast("Demo reset.");
+    toast("Demo reset. Ready for a fresh start.");
   }
 });
 window.addEventListener("hashchange", () => {

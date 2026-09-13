@@ -25,12 +25,3 @@ The checks below exercise the actual interactive prototype with fictional data.
 - The dominant action sentence stays above the working surface on all three routes.
 
 The prototype does not validate real buyer reliability, deliver notifications, or execute transactions. Relative dates and activity are intentionally fixed demo content.
-
-## Revision 2 checks
-
-- The listing photographs and details share one outer card on desktop and phone.
-- The main listing sentence is “No more guessing if an item is still available.”
-- Sample seller confirmation is distinct from message/offer interest counts.
-- Accepting, reopening, and completing a sale update the availability message correctly.
-- Availability updates persist after refresh; Reset demo restores the seeded confirmation.
-- The shared card is checked at desktop, 390-pixel, and 320-pixel widths.
