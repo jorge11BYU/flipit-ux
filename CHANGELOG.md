@@ -1,5 +1,11 @@
 # Flipit design history
 
+## Assignment write-up
+
+- Organized the author's assignment answers into the README with section headings and before-and-after screenshots; answer wording is unchanged.
+- Preserved the technical walkthrough and photo credits in `docs/PROTOTYPE.md`.
+- Design revisions were originally direct commits, then restored and reapplied through [pull request #1](https://github.com/jorge11BYU/flipit-ux/pull/1), which is merged. All original commits remain in history.
+
 ## Revision 3 — Copy cleanup
 
 - Removed repeated screen-name headings, gallery filler, sidebar taglines, and the footer slogan.
