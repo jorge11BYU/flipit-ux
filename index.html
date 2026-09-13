@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2455ed" />
+    <meta
+      name="description"
+      content="Flipit — an interactive marketplace concept for clearer offers and smoother local sales."
+    />
+    <title>Flipit — A clearer way to buy and sell</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#/listing" aria-label="Flipit home"
+          >flipit<span class="brand-mark" aria-hidden="true">↗</span></a
+        >
+        <nav aria-label="Main navigation">
+          <a href="#/listing" data-nav="listing">Item listing</a>
+          <a href="#/inbox" data-nav="inbox">Seller inbox</a>
+          <a href="#/sales" data-nav="sales"
+            >Pending sales<span id="pending-count" class="nav-count">1</span></a
+          >
+        </nav>
+        <span class="demo-label"><span></span>Interactive demo</span>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer class="site-footer">
+      <span>Made for clearer conversations.</span>
+      <div>
+        <span>Fictional listings · No real transactions</span
+        ><button type="button" id="reset-demo">Reset demo</button>
+      </div>
+    </footer>
+    <dialog id="modal" aria-labelledby="modal-title"></dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
