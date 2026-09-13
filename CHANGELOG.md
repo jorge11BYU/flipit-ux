@@ -1,5 +1,12 @@
 # Flipit design history
 
+## Revision 3 — Copy cleanup
+
+- Removed repeated screen-name headings, gallery filler, sidebar taglines, and the footer slogan.
+- Shortened section headings, item description, empty states, and success messages.
+- Kept the dominant headlines, buyer/seller perspective labels, availability signals, privacy information, and actionable reservation guidance.
+- Preserved existing demo interactions and session data.
+
 ## Revision 2 — Listing grouping and availability clarity
 
 - Grouped photographs, seller information, and listing details inside one shared card, with a subtle divider between the two desktop columns.
